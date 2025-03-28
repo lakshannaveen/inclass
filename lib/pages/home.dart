@@ -22,13 +22,13 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Simulating dynamic booking data, this can be fetched from an API or database.
-    List<Map<String, String>> bookings = [];
+    // Simulating dynamic book data, this can be fetched from an API or database.
+    List<Map<String, String>> books = [];
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue, // Set AppBar color to blue
-        title: const Text('Booking System'),
+        title: const Text('Books Management System'), // Updated title
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -48,26 +48,26 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Your Bookings',
+              'Your Books',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: bookings.isEmpty
-                  ? const Center(child: Text('No bookings available.'))
+              child: books.isEmpty
+                  ? const Center(child: Text('No books available.'))
                   : ListView.builder(
-                      itemCount: bookings.length,
+                      itemCount: books.length,
                       itemBuilder: (context, index) {
                         return Card(
                           margin: const EdgeInsets.symmetric(vertical: 8),
                           child: ListTile(
-                            title: Text(bookings[index]['title'] ??
-                                'Booking ${index + 1}'),
-                            subtitle: Text(bookings[index]['details'] ??
+                            title: Text(
+                                books[index]['title'] ?? 'Book ${index + 1}'),
+                            subtitle: Text(books[index]['details'] ??
                                 'Details not available'),
                             trailing: const Icon(Icons.arrow_forward),
                             onTap: () {
-                              // Handle booking tap
+                              // Handle book tap
                             },
                           ),
                         );
