@@ -34,6 +34,7 @@ class _AddPageState extends State<AddPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Book'),
+        backgroundColor: Colors.blue,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -41,11 +42,27 @@ class _AddPageState extends State<AddPage> {
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const Text(
+                  'Add a New Book',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                ),
+                const SizedBox(height: 20),
+
                 // Book Name Field
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(labelText: 'Book Name'),
+                  decoration: InputDecoration(
+                    labelText: 'Book Name',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter the book name';
@@ -58,7 +75,12 @@ class _AddPageState extends State<AddPage> {
                 // Author Name Field
                 TextFormField(
                   controller: _authorController,
-                  decoration: const InputDecoration(labelText: 'Author Name'),
+                  decoration: InputDecoration(
+                    labelText: 'Author Name',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter the author name';
@@ -72,54 +94,76 @@ class _AddPageState extends State<AddPage> {
                 GestureDetector(
                   onTap: _pickImage,
                   child: Container(
-                    height: 150,
+                    height: 200,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey),
                       borderRadius: BorderRadius.circular(8),
+                      color: Colors.grey[200],
                     ),
                     child: _selectedImage == null
-                        ? const Center(
-                            child: Text(
-                              'Tap to select an image',
-                              style: TextStyle(color: Colors.grey),
-                            ),
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(Icons.image, size: 50, color: Colors.grey),
+                              SizedBox(height: 8),
+                              Text(
+                                'Tap to select an image',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ],
                           )
-                        : Image.file(
-                            _selectedImage!,
-                            fit: BoxFit.cover,
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(
+                              _selectedImage!,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                   ),
                 ),
                 const SizedBox(height: 20),
 
                 // Submit Button
-                ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      if (_selectedImage == null) {
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        if (_selectedImage == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Please select an image')),
+                          );
+                          return;
+                        }
+
+                        // Create a new book and save it
+                        BookModel book = BookModel(
+                          name: _nameController.text,
+                          author: _authorController.text,
+                          imagePath: _selectedImage!.path,
+                        );
+                        await AddService.addBook(book);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                              content: Text('Please select an image')),
+                              content: Text('Book added successfully')),
                         );
-                        return;
+                        Navigator.pop(context); // Go back to the previous page
                       }
-
-                      // Create a new book and save it
-                      BookModel book = BookModel(
-                        name: _nameController.text,
-                        author: _authorController.text,
-                        imagePath: _selectedImage!.path,
-                      );
-                      await AddService.addBook(book);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Book added successfully')),
-                      );
-                      Navigator.pop(context); // Go back to the previous page
-                    }
-                  },
-                  child: const Text('Add Book'),
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Add Book',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
                 ),
               ],
             ),
