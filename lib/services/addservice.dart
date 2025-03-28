@@ -1,14 +1,31 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/bookmodel.dart';
 
 class AddService {
-  static final List<BookModel> _books = [];
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  static void addBook(BookModel book) {
-    _books.add(book);
-    // You can add logic to save the book to a database or API here
+  // Add a book to Firestore
+  static Future<void> addBook(BookModel book) async {
+    try {
+      await _firestore.collection('books').add({
+        'name': book.name,
+        'author': book.author,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      print('Error adding book: $e');
+    }
   }
 
-  static List<BookModel> getBooks() {
-    return _books;
+  // Retrieve books from Firestore (optional)
+  static Stream<List<BookModel>> getBooks() {
+    return _firestore.collection('books').snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return BookModel(
+          name: doc['name'],
+          author: doc['author'],
+        );
+      }).toList();
+    });
   }
 }

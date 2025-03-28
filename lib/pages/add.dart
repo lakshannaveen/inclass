@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import '../services/addservice.dart'; // Import AddService
-import '../models/bookmodel.dart'; // Import BookModel
+import '../services/addservice.dart';
+import '../models/bookmodel.dart';
 
 class AddPage extends StatefulWidget {
+  const AddPage({super.key});
+
   @override
   _AddPageState createState() => _AddPageState();
 }
@@ -46,14 +48,14 @@ class _AddPageState extends State<AddPage> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    // Create a new book and save it
+                    // Create a new book and save it to Firestore
                     BookModel book = BookModel(
                       name: _nameController.text,
                       author: _authorController.text,
                     );
-                    AddService.addBook(book);
+                    await AddService.addBook(book);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Book added successfully')),
                     );
