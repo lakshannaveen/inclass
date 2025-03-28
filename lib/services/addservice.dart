@@ -24,6 +24,7 @@ class AddService {
         return BookModel(
           name: doc['name'],
           author: doc['author'],
+          imagePath: doc['imagePath'], // Add the required imagePath argument
         );
       }).toList();
     });
