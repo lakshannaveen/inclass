@@ -23,6 +23,57 @@ class MyApp extends StatelessWidget {
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
+  void _editBook(BuildContext context, String bookId, String currentName,
+      String currentAuthor) {
+    final nameController = TextEditingController(text: currentName);
+    final authorController = TextEditingController(text: currentAuthor);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit Book'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: 'Book Name'),
+              ),
+              TextField(
+                controller: authorController,
+                decoration: const InputDecoration(labelText: 'Author Name'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                FirebaseFirestore.instance
+                    .collection('books')
+                    .doc(bookId)
+                    .update({
+                  'name': nameController.text,
+                  'author': authorController.text,
+                });
+                Navigator.pop(context);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteBook(String bookId) {
+    FirebaseFirestore.instance.collection('books').doc(bookId).delete();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,6 +122,7 @@ class HomePage extends StatelessWidget {
                     itemCount: books.length,
                     itemBuilder: (context, index) {
                       final book = books[index];
+                      final bookId = book.id;
                       final imagePath = book['imagePath'];
 
                       return Card(
@@ -97,10 +149,26 @@ class HomePage extends StatelessWidget {
                           title: Text(book['name'] ?? 'Book ${index + 1}'),
                           subtitle:
                               Text(book['author'] ?? 'Author not available'),
-                          trailing: const Icon(Icons.arrow_forward),
-                          onTap: () {
-                            // Handle book tap
-                          },
+                          trailing: PopupMenuButton<String>(
+                            onSelected: (value) {
+                              if (value == 'edit') {
+                                _editBook(context, bookId, book['name'],
+                                    book['author']);
+                              } else if (value == 'delete') {
+                                _deleteBook(bookId);
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              const PopupMenuItem(
+                                value: 'edit',
+                                child: Text('Edit'),
+                              ),
+                              const PopupMenuItem(
+                                value: 'delete',
+                                child: Text('Delete'),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },

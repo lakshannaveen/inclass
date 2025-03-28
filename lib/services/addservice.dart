@@ -18,6 +18,18 @@ class AddService {
     }
   }
 
+  static Future<void> editBook(
+      String bookId, String name, String author) async {
+    try {
+      await FirebaseFirestore.instance.collection('books').doc(bookId).update({
+        'name': name,
+        'author': author,
+      });
+    } catch (e) {
+      print('Error editing book: $e');
+    }
+  }
+
   // Retrieve books from Firestore (optional)
   static Stream<List<BookModel>> getBooks() {
     return _firestore.collection('books').snapshots().map((snapshot) {
