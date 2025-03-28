@@ -10,6 +10,7 @@ class AddService {
       await _firestore.collection('books').add({
         'name': book.name,
         'author': book.author,
+        'imagePath': book.imagePath, // Save the imagePath
         'timestamp': FieldValue.serverTimestamp(),
       });
     } catch (e) {

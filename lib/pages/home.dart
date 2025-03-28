@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io'; // Import for Image.file
 
 import 'add.dart'; // Import AddPage
 
@@ -70,9 +71,29 @@ class HomePage extends StatelessWidget {
                     itemCount: books.length,
                     itemBuilder: (context, index) {
                       final book = books[index];
+                      final imagePath = book['imagePath'];
+
                       return Card(
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         child: ListTile(
+                          leading: ClipRRect(
+                            borderRadius:
+                                BorderRadius.circular(8.0), // Rounded corners
+                            child: imagePath != null
+                                ? Image.file(
+                                    File(
+                                        imagePath), // Load image from local file
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Container(
+                                    width: 50,
+                                    height: 50,
+                                    color: Colors.grey[300],
+                                    child: const Icon(Icons.book, size: 30),
+                                  ),
+                          ),
                           title: Text(book['name'] ?? 'Book ${index + 1}'),
                           subtitle:
                               Text(book['author'] ?? 'Author not available'),
