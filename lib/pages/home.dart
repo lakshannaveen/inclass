@@ -179,13 +179,6 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add logic for button press, for example, navigating to a new page or adding data
-        },
-        child: const Icon(Icons.add),
-        backgroundColor: Colors.blue,
-      ),
     );
   }
 }
